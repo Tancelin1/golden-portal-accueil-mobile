@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { X, Star } from 'lucide-react';
+import { X, Star, MapPin, Building, TreePine, Landmark } from 'lucide-react';
 
 const CityCards = () => {
   const cities = [
@@ -13,6 +13,26 @@ const CityCards = () => {
       name: 'Gare Lille Flandres',
       icon: <Star className="w-8 h-8 text-yellow-500 fill-yellow-500" />,
       bgColor: 'bg-yellow-200'
+    },
+    {
+      name: 'Vieux Lille',
+      icon: <Building className="w-8 h-8 text-blue-600" />,
+      bgColor: 'bg-blue-200'
+    },
+    {
+      name: 'Citadelle',
+      icon: <TreePine className="w-8 h-8 text-green-600" />,
+      bgColor: 'bg-green-200'
+    },
+    {
+      name: 'Grand Place',
+      icon: <Landmark className="w-8 h-8 text-purple-600" />,
+      bgColor: 'bg-purple-200'
+    },
+    {
+      name: 'Euralille',
+      icon: <MapPin className="w-8 h-8 text-indigo-600" />,
+      bgColor: 'bg-indigo-200'
     }
   ];
 

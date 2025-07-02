@@ -27,9 +27,9 @@ const Footer = () => {
           )}
         </div>
 
-        {/* Ynov.com text */}
-        <div className="flex-1 border-r border-gray-300 flex items-center justify-center p-4">
-          <span className="text-gray-700 font-medium">ynov.com</span>
+        {/* Ynov.com text with more spacing */}
+        <div className="flex-1 border-r border-gray-300 flex items-center justify-center p-6">
+          <span className="text-gray-700 font-medium text-lg tracking-wider">y n o v . c o m</span>
         </div>
 
         {/* Information button */}

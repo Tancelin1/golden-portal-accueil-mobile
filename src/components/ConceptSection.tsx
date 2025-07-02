@@ -22,15 +22,23 @@ const ConceptSection = () => {
       <h2 className="text-center text-lg font-bold text-black mb-4">
         &lt;&lt;&lt; Le concept &gt;&gt;&gt;
       </h2>
-      <div className="space-y-3">
-        {steps.map((step) => (
-          <div key={step.number} className="flex items-start space-x-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-white border-2 border-gray-400 rounded-full flex items-center justify-center">
-              <span className="text-black font-bold text-sm">{step.number}</span>
-            </div>
-            <p className="text-black text-sm leading-relaxed pt-1">{step.title}</p>
-          </div>
-        ))}
+      
+      {/* Tableau avec bordures */}
+      <div className="border-2 border-gray-400 rounded-lg overflow-hidden">
+        <table className="w-full">
+          <tbody>
+            {steps.map((step, index) => (
+              <tr key={step.number} className={index < steps.length - 1 ? "border-b-2 border-gray-400" : ""}>
+                <td className="w-12 p-3 text-center border-r-2 border-gray-400 bg-gray-50">
+                  <span className="text-black font-bold text-lg">{step.number}</span>
+                </td>
+                <td className="p-3">
+                  <p className="text-black text-sm leading-relaxed">{step.title}</p>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -29,7 +29,6 @@ const BottomSection = () => {
               <div className="w-2 h-2 bg-white rounded-full"></div>
               <div className="w-2 h-2 bg-white rounded-full"></div>
             </div>
-            <span className="text-white text-xs font-bold ml-1">61.73 x 113.77</span>
           </div>
         </div>
       </div>
