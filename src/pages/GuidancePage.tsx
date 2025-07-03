@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowUp, ArrowDown, ArrowRight, ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight } from 'lucide-react';
 import { useDistanceTracking } from '../hooks/useDistanceTracking';
@@ -8,6 +8,7 @@ const GuidancePage = () => {
   const navigate = useNavigate();
   const { cityName } = useParams();
   const distanceData = useDistanceTracking(cityName || 'wazemmes');
+  const [testDirection, setTestDirection] = useState<number | null>(null);
 
   // Déterminer quelle flèche afficher selon la direction
   const getDirectionArrow = (direction: number) => {
@@ -47,7 +48,21 @@ const GuidancePage = () => {
   };
 
   const currentGuide = distanceData.distance < 500 ? 'hot' : 'cold';
-  const DirectionArrow = getDirectionArrow(distanceData.direction);
+  // Utiliser la direction de test si elle existe, sinon la vraie direction
+  const currentDirection = testDirection !== null ? testDirection : distanceData.direction;
+  const DirectionArrow = getDirectionArrow(currentDirection);
+
+  // Directions de test avec leurs noms
+  const testDirections = [
+    { name: 'N', direction: 0 },
+    { name: 'NE', direction: 45 },
+    { name: 'E', direction: 90 },
+    { name: 'SE', direction: 135 },
+    { name: 'S', direction: 180 },
+    { name: 'SW', direction: 225 },
+    { name: 'W', direction: 270 },
+    { name: 'NW', direction: 315 }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-400 via-blue-300 to-blue-500 flex flex-col">
@@ -117,11 +132,44 @@ const GuidancePage = () => {
         </div>
       </div>
 
+      {/* Test buttons for directions */}
+      <div className="p-4 bg-white/20 backdrop-blur-sm">
+        <div className="text-center mb-2">
+          <span className="text-white font-bold text-sm">Test des directions :</span>
+        </div>
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          {testDirections.map((dir) => (
+            <button
+              key={dir.name}
+              onClick={() => setTestDirection(dir.direction)}
+              className={`px-3 py-1 rounded-full text-xs font-bold ${
+                testDirection === dir.direction 
+                  ? 'bg-yellow-400 text-black' 
+                  : 'bg-white/30 text-white'
+              }`}
+            >
+              {dir.name}
+            </button>
+          ))}
+          <button
+            onClick={() => setTestDirection(null)}
+            className={`px-3 py-1 rounded-full text-xs font-bold ${
+              testDirection === null 
+                ? 'bg-green-400 text-black' 
+                : 'bg-white/30 text-white'
+            }`}
+          >
+            RÉEL
+          </button>
+        </div>
+      </div>
+
       {/* Demo buttons - remove in production */}
       <div className="p-4 flex justify-center space-x-4">
         <div className="bg-white rounded-full px-4 py-2">
           <span className="text-black text-sm">
             Distance: {distanceData.formattedDistance} | Mode: {currentGuide === 'hot' ? 'Chaud' : 'Froid'}
+            {testDirection !== null && ` | Test: ${testDirection}°`}
           </span>
         </div>
         <button
