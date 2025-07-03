@@ -1,8 +1,15 @@
 
 import React from 'react';
 import { X, Star, MapPin, Building, TreePine, Landmark } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-const CityCards = () => {
+interface CityCardsProps {
+  onCitySelect?: (cityName: string) => void;
+}
+
+const CityCards = ({ onCitySelect }: CityCardsProps) => {
+  const navigate = useNavigate();
+
   const cities = [
     {
       name: 'Wazemmes',
@@ -36,6 +43,19 @@ const CityCards = () => {
     }
   ];
 
+  const handleCityChoice = (cityName: string) => {
+    if (onCitySelect) {
+      onCitySelect(cityName);
+    } else {
+      // Navigate to guidance page for the selected city
+      navigate('/guidance');
+    }
+  };
+
+  const handleCityInfo = (cityName: string) => {
+    navigate('/info-point');
+  };
+
   return (
     <div className="mb-4">
       <div className="flex space-x-3 overflow-x-auto">
@@ -48,10 +68,16 @@ const CityCards = () => {
               {city.name}
             </h3>
             <div className="space-y-2">
-              <button className="w-full bg-black text-white py-1 px-3 rounded-full text-xs font-medium">
+              <button 
+                onClick={() => handleCityChoice(city.name)}
+                className="w-full bg-black text-white py-1 px-3 rounded-full text-xs font-medium hover:bg-gray-800 transition-colors"
+              >
                 choisir
               </button>
-              <button className="w-full bg-white text-black py-1 px-3 rounded-full text-xs font-medium border border-gray-300">
+              <button 
+                onClick={() => handleCityInfo(city.name)}
+                className="w-full bg-white text-black py-1 px-3 rounded-full text-xs font-medium border border-gray-300 hover:bg-gray-100 transition-colors"
+              >
                 info
               </button>
             </div>
