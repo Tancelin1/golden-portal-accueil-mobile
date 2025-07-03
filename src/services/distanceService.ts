@@ -5,40 +5,12 @@ interface DistanceResult {
   direction: number; // angle en degrés (0-360)
 }
 
-const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY'; // À remplacer par votre clé API
-
 export const calculateDistance = async (
   origin: { lat: number; lng: number },
   destination: { lat: number; lng: number }
 ): Promise<DistanceResult> => {
-  try {
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.lat},${origin.lng}&destinations=${destination.lat},${destination.lng}&units=metric&mode=walking&key=${GOOGLE_MAPS_API_KEY}`
-    );
-    
-    const data = await response.json();
-    
-    if (data.status === 'OK' && data.rows[0].elements[0].status === 'OK') {
-      const element = data.rows[0].elements[0];
-      const distance = element.distance.value; // en mètres
-      const duration = element.duration.value; // en secondes
-      
-      // Calculer la direction approximative
-      const direction = calculateBearing(origin, destination);
-      
-      return {
-        distance,
-        duration,
-        direction
-      };
-    } else {
-      throw new Error('Impossible de calculer la distance');
-    }
-  } catch (error) {
-    console.error('Erreur API Google Maps:', error);
-    // Fallback: calcul de distance approximative
-    return calculateDistanceApprox(origin, destination);
-  }
+  // Utilisation directe du calcul de Haversine (pas besoin d'API)
+  return calculateDistanceApprox(origin, destination);
 };
 
 // Calcul de direction entre deux points
@@ -60,7 +32,7 @@ const calculateBearing = (
   return bearing;
 };
 
-// Calcul de distance approximative (formule de Haversine)
+// Calcul de distance avec la formule de Haversine
 const calculateDistanceApprox = (
   origin: { lat: number; lng: number },
   destination: { lat: number; lng: number }

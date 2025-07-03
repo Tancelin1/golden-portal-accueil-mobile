@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
+import { useWebGeolocation } from './useWebGeolocation';
 
 interface Position {
   latitude: number;
@@ -11,6 +12,7 @@ export const useGeolocation = () => {
   const [position, setPosition] = useState<Position | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const webGeo = useWebGeolocation();
 
   useEffect(() => {
     let watchId: string;
@@ -45,9 +47,11 @@ export const useGeolocation = () => {
         });
 
       } catch (err) {
-        setError('Erreur de géolocalisation');
+        console.error('Capacitor Geolocation error:', err);
+        // Fallback vers la géolocalisation web
+        console.log('Fallback vers géolocalisation web');
+        setError('Utilisation géolocalisation web');
         setLoading(false);
-        console.error('Geolocation error:', err);
       }
     };
 
@@ -59,6 +63,15 @@ export const useGeolocation = () => {
       }
     };
   }, []);
+
+  // Si Capacitor échoue, utiliser la géolocalisation web
+  if (error && webGeo.position) {
+    return {
+      position: webGeo.position,
+      error: null,
+      loading: webGeo.loading
+    };
+  }
 
   return { position, error, loading };
 };
