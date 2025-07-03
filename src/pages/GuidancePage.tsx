@@ -1,11 +1,33 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useDistanceTracking } from '../hooks/useDistanceTracking';
 
 const GuidancePage = () => {
   const navigate = useNavigate();
-  const [currentGuide, setCurrentGuide] = useState<'hot' | 'cold'>('hot');
+  const { cityName } = useParams();
+  const distanceData = useDistanceTracking(cityName || 'wazemmes');
+
+  // Convertir la direction en rotation CSS
+  const getArrowRotation = (direction: number) => {
+    return `rotate(${direction}deg)`;
+  };
+
+  // Déterminer le message selon la distance
+  const getDistanceMessage = () => {
+    if (distanceData.distance < 50) {
+      return "Vous y êtes presque !";
+    } else if (distanceData.distance < 100) {
+      return `${distanceData.formattedDistance}, continue !`;
+    } else if (distanceData.distance < 500) {
+      return `${distanceData.formattedDistance}, tu te rapproches !`;
+    } else {
+      return `${distanceData.formattedDistance}, trop loin !`;
+    }
+  };
+
+  const currentGuide = distanceData.distance < 500 ? 'hot' : 'cold';
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-400 via-blue-300 to-blue-500 flex flex-col">
@@ -28,7 +50,12 @@ const GuidancePage = () => {
             <div className="flex-1 flex items-center justify-center">
               <div className="relative">
                 <div className="w-32 h-32 bg-blue-500 rounded-full flex items-center justify-center">
-                  <div className="text-6xl text-white transform rotate-45">↗</div>
+                  <div 
+                    className="text-6xl text-white transition-transform duration-500"
+                    style={{ transform: getArrowRotation(distanceData.direction) }}
+                  >
+                    ↑
+                  </div>
                 </div>
               </div>
             </div>
@@ -36,7 +63,7 @@ const GuidancePage = () => {
             {/* Bottom Message */}
             <div className="text-center mt-8">
               <div className="bg-white rounded-full px-6 py-3 inline-block">
-                <span className="text-black font-bold">35m, continue !</span>
+                <span className="text-black font-bold">{getDistanceMessage()}</span>
               </div>
             </div>
           </div>
@@ -60,7 +87,12 @@ const GuidancePage = () => {
             <div className="flex-1 flex items-center justify-center">
               <div className="relative">
                 <div className="w-32 h-32 bg-blue-500 rounded-full flex items-center justify-center">
-                  <div className="text-6xl text-white">↑</div>
+                  <div 
+                    className="text-6xl text-white transition-transform duration-500"
+                    style={{ transform: getArrowRotation(distanceData.direction) }}
+                  >
+                    ↑
+                  </div>
                 </div>
               </div>
             </div>
@@ -68,36 +100,26 @@ const GuidancePage = () => {
             {/* Bottom Message */}
             <div className="text-center mt-8">
               <div className="bg-white rounded-full px-6 py-3 inline-block">
-                <span className="text-black font-bold">150m, trop loin !</span>
+                <span className="text-black font-bold">{getDistanceMessage()}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Switch buttons for demo */}
+      {/* Demo buttons - remove in production */}
       <div className="p-4 flex justify-center space-x-4">
-        <button
-          onClick={() => setCurrentGuide('hot')}
-          className={`px-4 py-2 rounded-full font-bold ${
-            currentGuide === 'hot' ? 'bg-orange-500 text-white' : 'bg-white text-black'
-          }`}
-        >
-          Chaud
-        </button>
-        <button
-          onClick={() => setCurrentGuide('cold')}
-          className={`px-4 py-2 rounded-full font-bold ${
-            currentGuide === 'cold' ? 'bg-blue-500 text-white' : 'bg-white text-black'
-          }`}
-        >
-          Froid
-        </button>
+        <div className="bg-white rounded-full px-4 py-2">
+          <span className="text-black text-sm">
+            Distance: {distanceData.formattedDistance} | Mode: {currentGuide === 'hot' ? 'Chaud' : 'Froid'}
+          </span>
+        </div>
         <button
           onClick={() => navigate('/ar-scene')}
           className="bg-green-500 text-white px-4 py-2 rounded-full font-bold"
+          disabled={distanceData.distance > 50}
         >
-          Arrivé sur place
+          {distanceData.distance > 50 ? 'Rapprochez-vous' : 'Arrivé sur place'}
         </button>
       </div>
 
