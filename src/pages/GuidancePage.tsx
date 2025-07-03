@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowUp, ArrowDown, ArrowRight, ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight } from 'lucide-react';
 import { useDistanceTracking } from '../hooks/useDistanceTracking';
 
 const GuidancePage = () => {
@@ -9,9 +9,28 @@ const GuidancePage = () => {
   const { cityName } = useParams();
   const distanceData = useDistanceTracking(cityName || 'wazemmes');
 
-  // Convertir la direction en rotation CSS
-  const getArrowRotation = (direction: number) => {
-    return `rotate(${direction}deg)`;
+  // Déterminer quelle flèche afficher selon la direction
+  const getDirectionArrow = (direction: number) => {
+    // Normaliser la direction entre 0 et 360
+    const normalizedDirection = ((direction % 360) + 360) % 360;
+    
+    if (normalizedDirection >= 337.5 || normalizedDirection < 22.5) {
+      return ArrowUp; // Nord
+    } else if (normalizedDirection >= 22.5 && normalizedDirection < 67.5) {
+      return ArrowUpRight; // Nord-Est
+    } else if (normalizedDirection >= 67.5 && normalizedDirection < 112.5) {
+      return ArrowRight; // Est
+    } else if (normalizedDirection >= 112.5 && normalizedDirection < 157.5) {
+      return ArrowDownRight; // Sud-Est
+    } else if (normalizedDirection >= 157.5 && normalizedDirection < 202.5) {
+      return ArrowDown; // Sud
+    } else if (normalizedDirection >= 202.5 && normalizedDirection < 247.5) {
+      return ArrowDownLeft; // Sud-Ouest
+    } else if (normalizedDirection >= 247.5 && normalizedDirection < 292.5) {
+      return ArrowLeft; // Ouest
+    } else {
+      return ArrowUpLeft; // Nord-Ouest
+    }
   };
 
   // Déterminer le message selon la distance
@@ -28,6 +47,7 @@ const GuidancePage = () => {
   };
 
   const currentGuide = distanceData.distance < 500 ? 'hot' : 'cold';
+  const DirectionArrow = getDirectionArrow(distanceData.direction);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-400 via-blue-300 to-blue-500 flex flex-col">
@@ -50,12 +70,7 @@ const GuidancePage = () => {
             <div className="flex-1 flex items-center justify-center">
               <div className="relative">
                 <div className="w-32 h-32 bg-blue-500 rounded-full flex items-center justify-center">
-                  <div 
-                    className="text-6xl text-white transition-transform duration-500"
-                    style={{ transform: getArrowRotation(distanceData.direction) }}
-                  >
-                    ↑
-                  </div>
+                  <DirectionArrow className="w-16 h-16 text-white" />
                 </div>
               </div>
             </div>
@@ -87,12 +102,7 @@ const GuidancePage = () => {
             <div className="flex-1 flex items-center justify-center">
               <div className="relative">
                 <div className="w-32 h-32 bg-blue-500 rounded-full flex items-center justify-center">
-                  <div 
-                    className="text-6xl text-white transition-transform duration-500"
-                    style={{ transform: getArrowRotation(distanceData.direction) }}
-                  >
-                    ↑
-                  </div>
+                  <DirectionArrow className="w-16 h-16 text-white" />
                 </div>
               </div>
             </div>
