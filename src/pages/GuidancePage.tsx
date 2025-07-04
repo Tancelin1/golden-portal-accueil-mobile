@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowUp, ArrowDown, ArrowRight, ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight } from 'lucide-react';
 import { useDistanceTracking } from '../hooks/useDistanceTracking';
@@ -9,6 +8,18 @@ const GuidancePage = () => {
   const { cityName } = useParams();
   const distanceData = useDistanceTracking(cityName || 'wazemmes');
   const [testDirection, setTestDirection] = useState<number | null>(null);
+  const [hasLaunchedVR, setHasLaunchedVR] = useState(false);
+
+  // Auto-lancement de la VR quand on arrive sur place
+  useEffect(() => {
+    if (distanceData.distance <= 50 && !hasLaunchedVR) {
+      setHasLaunchedVR(true);
+      // Petite pause pour permettre à l'utilisateur de voir qu'il est arrivé
+      setTimeout(() => {
+        navigate(`/vr-scene/${cityName}`);
+      }, 2000);
+    }
+  }, [distanceData.distance, hasLaunchedVR, navigate, cityName]);
 
   // Déterminer quelle flèche afficher selon la direction
   const getDirectionArrow = (direction: number) => {
@@ -87,13 +98,21 @@ const GuidancePage = () => {
                 <div className="w-32 h-32 bg-blue-500 rounded-full flex items-center justify-center">
                   <DirectionArrow className="w-16 h-16 text-white" />
                 </div>
+                {/* Indication d'arrivée */}
+                {distanceData.distance <= 50 && (
+                  <div className="absolute -top-4 -right-4 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-bounce">
+                    ARRIVÉ !
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Bottom Message */}
             <div className="text-center mt-8">
               <div className="bg-white rounded-full px-6 py-3 inline-block">
-                <span className="text-black font-bold">{getDistanceMessage()}</span>
+                <span className="text-black font-bold">
+                  {distanceData.distance <= 50 ? "🎉 Lancement de la VR..." : getDistanceMessage()}
+                </span>
               </div>
             </div>
           </div>
@@ -164,7 +183,7 @@ const GuidancePage = () => {
         </div>
       </div>
 
-      {/* Demo buttons - remove in production */}
+      {/* Demo buttons */}
       <div className="p-4 flex justify-center space-x-4">
         <div className="bg-white rounded-full px-4 py-2">
           <span className="text-black text-sm">
@@ -173,11 +192,15 @@ const GuidancePage = () => {
           </span>
         </div>
         <button
-          onClick={() => navigate('/ar-scene')}
-          className="bg-green-500 text-white px-4 py-2 rounded-full font-bold"
+          onClick={() => navigate(`/vr-scene/${cityName}`)}
+          className={`px-4 py-2 rounded-full font-bold transition-colors ${
+            distanceData.distance > 50 
+              ? 'bg-gray-400 text-gray-600' 
+              : 'bg-green-500 text-white hover:bg-green-600'
+          }`}
           disabled={distanceData.distance > 50}
         >
-          {distanceData.distance > 50 ? 'Rapprochez-vous' : 'Arrivé sur place'}
+          {distanceData.distance > 50 ? 'Rapprochez-vous' : '🥽 Lancer VR'}
         </button>
       </div>
 

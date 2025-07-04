@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +12,7 @@ import ARScenePage from "./pages/ARScenePage";
 import InfoPointPage from "./pages/InfoPointPage";
 import GuidancePage from "./pages/GuidancePage";
 import NotFound from "./pages/NotFound";
+import VRScenePage from "./pages/VRScenePage";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +29,7 @@ const App = () => (
           <Route path="/city-selection" element={<CitySelectionPage />} />
           <Route path="/no-points" element={<NoPointsPage />} />
           <Route path="/ar-scene" element={<ARScenePage />} />
+          <Route path="/vr-scene/:cityName" element={<VRScenePage />} />
           <Route path="/info-point" element={<InfoPointPage />} />
           <Route path="/guidance" element={<GuidancePage />} />
           <Route path="/city-details/:cityName" element={<GuidancePage />} />
